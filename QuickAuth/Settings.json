@@ -1,0 +1,5 @@
+﻿{
+  "App": {
+    "ConnectionCheck": "http://gstatic.com/generate_204"
+  }
+}
