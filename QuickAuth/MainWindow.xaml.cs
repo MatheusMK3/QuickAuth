@@ -21,6 +21,8 @@ namespace QuickAuth
     {
         public MainWindow()
         {
+            QuickAuthLib.ConnetivityTest.Check("http://gstatic.com/generate_204");
+
             InitializeComponent();
         }
     }
