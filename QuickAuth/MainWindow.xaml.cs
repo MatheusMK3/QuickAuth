@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuickAuthLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,12 @@ namespace QuickAuth
     {
         public MainWindow()
         {
-            QuickAuthLib.ConnetivityTest.Check("http://gstatic.com/generate_204");
+            bool isConnected = ConnetivityTest.Check("http://gstatic.com/generate_204");
+
+            if (!isConnected)
+            {
+                LoginPage login = LoginPage.Load("http://gstatic.com/generate_204");
+            }
 
             InitializeComponent();
         }

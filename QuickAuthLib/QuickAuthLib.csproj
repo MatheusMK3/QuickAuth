@@ -56,6 +56,7 @@
     <Compile Include="ConnetivityTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LoginPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
