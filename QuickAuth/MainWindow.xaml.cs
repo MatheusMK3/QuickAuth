@@ -22,11 +22,14 @@ namespace QuickAuth
     {
         public MainWindow()
         {
-            bool isConnected = ConnetivityTest.Check("http://gstatic.com/generate_204");
+            AppSettings settings = AppSettings.load("Settings.json");
+
+            ConnectivityTestResults results;
+            bool isConnected = ConnetivityTest.Check(settings.App["ConnectionCheck"], out results);
 
             if (!isConnected)
             {
-                LoginPage login = LoginPage.Load("http://gstatic.com/generate_204");
+                LoginPage login = LoginPage.Load(results.ResponseURL);
             }
 
             InitializeComponent();

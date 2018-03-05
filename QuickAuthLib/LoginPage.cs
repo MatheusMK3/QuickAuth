@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -10,26 +11,40 @@ namespace QuickAuthLib
 {
     public class LoginPage
     {
-        public string UsernameField { get; private set; }
-        public string PasswordField { get; private set; }
-        public string SubmitURL { get; private set; }
+        public Dictionary<string, string> Fields { get; protected set; }
+        public string UsernameField { get; protected set; }
+        public string PasswordField { get; protected set; }
+        public string SubmitURL { get; protected set; }
 
         protected LoginPage(string htmlCode)
         {
+            // Initialize Fields
+            this.Fields = new Dictionary<string, string>();
+
+            // Initialize HTML Document
             HtmlDocument dom = new HtmlDocument();
             dom.LoadHtml(htmlCode);
 
+            // Find all <input> tags
             HtmlNodeCollection inputs = dom.DocumentNode.SelectNodes("//td/input");
 
             // Find our username and password fields
             HtmlNode previousNode = null;
             foreach (HtmlNode input in inputs) {
+                // Add fields with default values to our "Fields" array, just in case there's some sort of validation like CSRF
+                if (input.Attributes.Contains("value"))
+                    this.Fields.Add(input.Attributes["name"].Value, input.Attributes["value"].Value);
+                
+                // Check if current field is of "password" type
                 if (input.Attributes["type"].Value.ToLower() == "password")
                 {
+                    // Save password field
                     this.PasswordField = input.Attributes["name"].Value;
+
+                    // Save previous field as "username"
                     this.UsernameField = previousNode.Attributes["name"].Value;
-                    break;
                 }
+
                 previousNode = input;
             }
 
@@ -80,7 +95,23 @@ namespace QuickAuthLib
         }
         public void Login(string username, string password)
         {
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(this.SubmitURL);
+            using (WebClient client = new WebClient())
+            {
+                NameValueCollection postData = new NameValueCollection();
+
+                // Feed our Fields to postData
+                foreach(var field in this.Fields)
+                {
+                    postData[field.Key] = field.Value;
+                }
+
+                // Feed username and password
+                postData[this.UsernameField] = username;
+                postData[this.PasswordField] = password;
+                
+                // POST to server
+                byte[] response = client.UploadValues(this.SubmitURL, postData);
+            }
         }
     }
 }

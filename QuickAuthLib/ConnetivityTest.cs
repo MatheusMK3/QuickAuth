@@ -11,24 +11,59 @@ namespace QuickAuthLib
     {
         public static bool Check(string url)
         {
-            // Create HTTP Web Request and Response objects
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+            ConnectivityTestResults empty;
+            return Check(url, out empty);
+        }
+        public static bool Check(string url, out ConnectivityTestResults results)
+        {
+            results = new ConnectivityTestResults();
+            results.RequestURL = url;
 
-            // Retrieve response URL and Status
-            string resUrl = res.ResponseUri.ToString();
-            int resStatus = (int)res.StatusCode;
+            // Create HTTP Web Request and Response objects
+            HttpWebRequest req;
+            HttpWebResponse res;
+
+            try
+            {
+                // Populate HTTP Web Request and Response objects, execute
+                req = (HttpWebRequest)WebRequest.Create(url);
+                res = (HttpWebResponse)req.GetResponse();
+
+                results.HasInternet = true;
+            }
+            catch
+            {
+                results.HasPassedTest = false;
+                results.HasInternet = false;
+                return false;
+            }
+
+            // Populate Results Object
+            results.ResponseURL = res.ResponseUri.ToString();
+            results.StatusCode = (int)res.StatusCode;
 
             // Validate if page has redirected or returned something other than 2XX response
-            bool hasRedirected = (url != resUrl);
-            bool hasStatus2XX = ((int)res.StatusCode >= 200 && (int)res.StatusCode < 300);
+            results.HasRedirected = (results.RequestURL != results.ResponseURL);
+            results.HasStatus2XX = (results.StatusCode >= 200 && results.StatusCode < 300);
 
-            // If it's the page we are looking for, return true
-            if (!hasRedirected && hasStatus2XX)
-                return true;
+            // If it's the page we are looking for, set as passed
+            if (!results.HasRedirected && results.HasStatus2XX)
+                results.HasPassedTest = true;
+            else
+                results.HasPassedTest = false;
 
-            // Else return false
-            return false;
+            // Return passed state
+            return results.HasPassedTest;
         }
+    }
+    public struct ConnectivityTestResults
+    {
+        public bool HasInternet;
+        public bool HasRedirected;
+        public bool HasStatus2XX;
+        public bool HasPassedTest;
+        public string RequestURL;
+        public string ResponseURL;
+        public int StatusCode;
     }
 }
