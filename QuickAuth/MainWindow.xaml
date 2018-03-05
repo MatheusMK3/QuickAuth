@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuickAuth"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="QuickAuth" Height="400" Width="600" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid>
-        
+        <DockPanel Name="BindConnectionStatusBackground" Height="50" VerticalAlignment="Top" Background="Gray">
+            <Label Name="BindConnectionStatusText" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold">LOADING...</Label>
+        </DockPanel>
     </Grid>
 </Window>

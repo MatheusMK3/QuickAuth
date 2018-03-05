@@ -1,5 +1,34 @@
 ﻿{
   "App": {
     "ConnectionCheck": "http://gstatic.com/generate_204"
-  }
+  },
+  "ConnectionStatus": {
+    "Connected": {
+      "StatusText": "Connected",
+      "StatusColor": "#4CC446"
+    },
+    "Connecting": {
+      "StatusText": "Connecting",
+      "StatusColor": "#F4CF29"
+    },
+    "ConnectLogin": {
+      "StatusText": "Logging In",
+      "StatusColor": "#F4C229"
+    },
+    "RequestLogin": {
+      "StatusText": "Requested Login",
+      "StatusColor": "#D68113"
+    },
+    "NoInternet": {
+      "StatusText": "No Internet",
+      "StatusColor": "#C42323"
+    }
+  },
+  "LoginPage": {
+    "Title": "Connect to Network...",
+    "LabelUsername": "Username",
+    "LabelPassword": "Password",
+    "LabelConnect": "Connect"
+  },
+  "SavedNetworks": {}
 }

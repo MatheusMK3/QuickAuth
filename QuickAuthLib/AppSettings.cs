@@ -9,10 +9,27 @@ namespace QuickAuthLib
 {
     public class AppSettings
     {
+        private string LoadedFile;
+
         public IDictionary<string, string> App { get; set; }
+        public IDictionary<string, string> LoginPage { get; set; }
+        public IDictionary<string, ConnectionStatusValue> ConnectionStatus { get; set; }
+        public IDictionary<string, SavedNetwork> SavedNetworks { get; set; }
+
         public static AppSettings LoadedSettings;
 
-        public static AppSettings load(string file)
+        public struct ConnectionStatusValue
+        {
+            public string StatusText;
+            public string StatusColor;
+        }
+        public struct SavedNetwork
+        {
+            public string Username;
+            public string Password;
+        }
+
+        public static AppSettings Load(string file)
         {
             // Stream de Arquivo e leitura
             FileStream fileAccess = new FileStream(file, FileMode.Open);
@@ -26,15 +43,27 @@ namespace QuickAuthLib
             fileAccess.Close();
 
             AppSettings settings = JsonConvert.DeserializeObject<AppSettings>(rawJson);
+            settings.LoadedFile = file;
 
             // Global (loaded) app settings
             LoadedSettings = settings;
 
             return settings;
         }
-        public static object get(string key)
+        public void Save()
         {
-            return null;
+            string json = JsonConvert.SerializeObject(this);
+            
+            if (this.LoadedFile != null)
+            {
+                try
+                {
+                    StreamWriter writer = new StreamWriter(this.LoadedFile, false);
+                    writer.Write(json);
+                    writer.Close();
+                }
+                catch { }
+            }
         }
     }
 }
