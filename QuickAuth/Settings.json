@@ -19,6 +19,10 @@
       "StatusText": "Requested Login",
       "StatusColor": "#D68113"
     },
+    "Error": {
+      "StatusText": "Error",
+      "StatusColor": "#C42323"
+    },
     "NoInternet": {
       "StatusText": "No Internet",
       "StatusColor": "#C42323"

@@ -127,34 +127,45 @@ namespace QuickAuth
 
             new Thread(() =>
             {
-                // Run login function
-                LoginPage login = LoginPage.Load(url);
-                login.Login(username, password);
+                try
+                {
+                    // Run login function
+                    LoginPage login = LoginPage.Load(url);
+                    login.Login(username, password);
 
                 // After running the login function, send a connection test to our UI thread
-                this.CallUI(new ThreadStart(delegate
-                {
-                    this.RunConnectionTest();
-
-                    // If login has worked...
-                    if (this.connectivityStatus.HasPassedTest)
+                    this.CallUI(new ThreadStart(delegate
                     {
-                        // Save current settings
-                        AppSettings.SavedNetwork network = new AppSettings.SavedNetwork();
-                        network.Username = username;
-                        network.Password = password;
+                        this.RunConnectionTest();
 
-                        // Save current login-password combo with this login URL
-                        if (!this.settings.SavedNetworks.ContainsKey(url))
-                            this.settings.SavedNetworks.Add(url, network);
+                        // If login has worked...
+                        if (this.connectivityStatus.HasPassedTest)
+                        {
+                            // Save current settings
+                            AppSettings.SavedNetwork network = new AppSettings.SavedNetwork();
+                            network.Username = username;
+                            network.Password = password;
 
-                        this.settings.Save();
-                    }
+                            // Save current login-password combo with this login URL
+                            if (!this.settings.SavedNetworks.ContainsKey(url))
+                                this.settings.SavedNetworks.Add(url, network);
 
-                    // If didn't and we were connected, unsave it
-                    else if (this.connectivityStatus.HasInternet && this.settings.SavedNetworks.ContainsKey(url))
-                        this.settings.SavedNetworks.Remove(url);
-                }));
+                            this.settings.Save();
+                        }
+
+                        // If didn't and we were connected, unsave it
+                        else if (this.connectivityStatus.HasInternet && this.settings.SavedNetworks.ContainsKey(url))
+                            this.settings.SavedNetworks.Remove(url);
+                    }));
+                }
+                catch
+                {
+                    // If some error happens while logging in, update UI
+                    this.CallUI(new ThreadStart(delegate
+                    {
+                        this.SetConnectionStatus(settings.ConnectionStatus["Error"]);
+                    }));
+                }
 
             }).Start();
         }
